@@ -988,18 +988,39 @@ function renderInvoicePreviewTemplate(inv) {
     ? `<img src="${inv.signature}" class="tpl-signature-img" alt="Signature">` 
     : `<div style="height: 35px; border-bottom: 1px solid #d1d5db; width: 140px; margin-bottom: 4px;"></div>`;
 
+  // Hiding company header (letterhead option)
+  const sellerHeaderStyle = inv.optLetterhead ? 'style="visibility: hidden;"' : '';
+
+  // Single line layout for details
+  let companyDetailsHtml = '';
+  if (inv.optSingleLineHeader) {
+    const parts = [];
+    if (inv.seller.address) parts.push(inv.seller.address.replace(/\n/g, ' '));
+    if (inv.seller.phone) parts.push('Phone: ' + inv.seller.phone);
+    if (inv.seller.email) parts.push('Email: ' + inv.seller.email);
+    if (inv.seller.taxId) parts.push(inv.taxType + ': ' + inv.seller.taxId);
+    companyDetailsHtml = `<div class="tpl-company-details" style="font-size: ${inv.optCompanyDetailsFs}px;">${parts.join(' | ')}</div>`;
+  } else {
+    companyDetailsHtml = `
+      <div class="tpl-company-details" style="font-size: ${inv.optCompanyDetailsFs}px;">
+        ${inv.seller.address ? inv.seller.address.replace(/\n/g, '<br>') : ''}<br>
+        ${inv.seller.phone ? 'Phone: ' + inv.seller.phone : ''} ${inv.seller.email ? ' | Email: ' + inv.seller.email : ''}
+        ${inv.seller.taxId ? '<br>' + inv.taxType + ': ' + inv.seller.taxId : ''}
+      </div>
+    `;
+  }
+
+  // Company Name style
+  const companyNameStyle = `style="font-size: ${inv.optCompanyNameFs}px; color: ${inv.optCompanyNameColor};"`;
+
   // General layout
   target.innerHTML = `
     <!-- HEADER -->
     <div class="tpl-header">
-      <div class="tpl-header-left">
+      <div class="tpl-header-left" ${sellerHeaderStyle}>
         ${logoHtml}
-        <div class="tpl-company-name">${inv.seller.name || 'Your Company'}</div>
-        <div class="tpl-company-details">
-          ${inv.seller.address ? inv.seller.address.replace(/\n/g, '<br>') : ''}<br>
-          ${inv.seller.phone ? 'Phone: ' + inv.seller.phone : ''} ${inv.seller.email ? ' | Email: ' + inv.seller.email : ''}
-          ${inv.seller.taxId ? '<br>' + inv.taxType + ': ' + inv.seller.taxId : ''}
-        </div>
+        <div class="tpl-company-name" ${companyNameStyle}>${inv.seller.name || 'Your Company'}</div>
+        ${companyDetailsHtml}
       </div>
       <div class="tpl-header-right">
         <div class="tpl-inv-title">Invoice</div>
@@ -1068,6 +1089,12 @@ function renderInvoicePreviewTemplate(inv) {
           <span>Taxes (${inv.taxType}):</span>
           <span>${fC(inv.taxTotal)}</span>
         </div>
+        ${inv.previousDue > 0 ? `
+          <div class="tpl-totals-row">
+            <span>Previous Due:</span>
+            <span>${fC(inv.previousDue)}</span>
+          </div>
+        ` : ''}
         <div class="tpl-totals-row grand-total">
           <span>Grand Total:</span>
           <span>${fC(inv.total)}</span>
@@ -1084,7 +1111,7 @@ function renderInvoicePreviewTemplate(inv) {
         <!-- Authorized Signature -->
         <div class="tpl-signature-wrapper">
           ${sigHtml}
-          <div class="tpl-signature-lbl">Authorized Representative</div>
+          <div class="tpl-signature-lbl">${inv.seller.issuedBy || 'Authorized Representative'}</div>
         </div>
       </div>
     </div>
@@ -1136,7 +1163,8 @@ function saveInvoiceAction() {
   const subtotal = lineItems.reduce((acc, curr) => acc + curr.subtotal, 0);
   const taxTotal = lineItems.reduce((acc, curr) => acc + (curr.subtotal * (curr.taxRate / 100)), 0);
   let discountVal = discountType === 'percent' ? subtotal * (discountInput / 100) : discountInput;
-  const total = subtotal - discountVal + taxTotal;
+  const previousDue = parseFloat(elements['inv-previous-due'].value) || 0;
+  const total = subtotal - discountVal + taxTotal + previousDue;
   const paid = parseFloat(elements['inv-paid-amount'].value) || 0;
   const balance = total - paid;
 
@@ -1153,7 +1181,8 @@ function saveInvoiceAction() {
       phone: elements['seller-phone'].value,
       email: elements['seller-email'].value,
       address: elements['seller-address'].value,
-      logo: state.logoDataUri
+      logo: state.logoDataUri,
+      issuedBy: elements['seller-issued-by'] ? elements['seller-issued-by'].value : ''
     },
     buyer: {
       name: elements['buyer-name'].value,
@@ -1168,13 +1197,19 @@ function saveInvoiceAction() {
     discountType,
     discountInput,
     discountValue: discountVal,
+    previousDue,
     total,
     paid,
     balance,
     upi: elements['payment-upi-id'].value,
     bankDetails: elements['payment-bank-details'].value,
     terms: elements['inv-terms'].value,
-    signature: state.signatureImage
+    signature: state.signatureImage,
+    optLetterhead: elements['opt-letterhead'] ? elements['opt-letterhead'].checked : false,
+    optSingleLineHeader: elements['opt-single-line-header'] ? elements['opt-single-line-header'].checked : false,
+    optCompanyNameFs: elements['opt-company-name-fs'] ? elements['opt-company-name-fs'].value : '24',
+    optCompanyDetailsFs: elements['opt-company-details-fs'] ? elements['opt-company-details-fs'].value : '11',
+    optCompanyNameColor: elements['opt-company-name-color'] ? elements['opt-company-name-color'].value : '#3b82f6'
   };
 
   // Add or edit
@@ -1229,7 +1264,8 @@ function shareWhatsAppAction() {
   const discountInput = parseFloat(elements['inv-discount'].value) || 0;
   const discountType = elements['inv-discount-type'].value;
   let discountVal = discountType === 'percent' ? subtotal * (discountInput / 100) : discountInput;
-  const grandTotal = subtotal - discountVal + tax;
+  const previousDue = parseFloat(elements['inv-previous-due'].value) || 0;
+  const grandTotal = subtotal - discountVal + tax + previousDue;
   const paid = parseFloat(elements['inv-paid-amount'].value) || 0;
   const balance = grandTotal - paid;
 
@@ -1271,6 +1307,21 @@ function clearEditorForm() {
     if (elements['buyer-address']) elements['buyer-address'].value = '';
     if (elements['inv-discount']) elements['inv-discount'].value = '0';
     if (elements['inv-paid-amount']) elements['inv-paid-amount'].value = '0';
+    if (elements['inv-previous-due']) elements['inv-previous-due'].value = '0';
+    if (elements['seller-issued-by']) elements['seller-issued-by'].value = '';
+    
+    // Reset styling controls
+    if (elements['opt-letterhead']) elements['opt-letterhead'].checked = false;
+    if (elements['opt-single-line-header']) elements['opt-single-line-header'].checked = false;
+    if (elements['opt-company-name-fs']) {
+      elements['opt-company-name-fs'].value = '24';
+      if (elements['val-company-name-fs']) elements['val-company-name-fs'].textContent = '24px';
+    }
+    if (elements['opt-company-details-fs']) {
+      elements['opt-company-details-fs'].value = '11';
+      if (elements['val-company-details-fs']) elements['val-company-details-fs'].textContent = '11px';
+    }
+    if (elements['opt-company-name-color']) elements['opt-company-name-color'].value = '#3b82f6';
     
     // Clear items safely
     if (elements['editor-items-list']) {
@@ -1320,9 +1371,36 @@ function loadInvoiceToEditor(invoiceId) {
   elements['inv-discount'].value = inv.discountInput || '0';
   elements['inv-discount-type'].value = inv.discountType || 'percent';
   elements['inv-paid-amount'].value = inv.paid || '0';
+  elements['inv-previous-due'].value = inv.previousDue || '0';
+  if (elements['seller-issued-by']) {
+    elements['seller-issued-by'].value = inv.seller.issuedBy || '';
+  }
   elements['payment-upi-id'].value = inv.upi || '';
   elements['payment-bank-details'].value = inv.bankDetails || '';
   elements['inv-terms'].value = inv.terms || '';
+
+  // Style controls load
+  if (elements['opt-letterhead']) {
+    elements['opt-letterhead'].checked = inv.optLetterhead || false;
+  }
+  if (elements['opt-single-line-header']) {
+    elements['opt-single-line-header'].checked = inv.optSingleLineHeader || false;
+  }
+  if (elements['opt-company-name-fs']) {
+    elements['opt-company-name-fs'].value = inv.optCompanyNameFs || '24';
+    if (elements['val-company-name-fs']) {
+      elements['val-company-name-fs'].textContent = (inv.optCompanyNameFs || '24') + 'px';
+    }
+  }
+  if (elements['opt-company-details-fs']) {
+    elements['opt-company-details-fs'].value = inv.optCompanyDetailsFs || '11';
+    if (elements['val-company-details-fs']) {
+      elements['val-company-details-fs'].textContent = (inv.optCompanyDetailsFs || '11') + 'px';
+    }
+  }
+  if (elements['opt-company-name-color']) {
+    elements['opt-company-name-color'].value = inv.optCompanyNameColor || '#3b82f6';
+  }
 
   // Logo
   state.logoDataUri = inv.seller.logo || '';
