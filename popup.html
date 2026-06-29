@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Maker Pro</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="header">
+      <img src="icon.png" alt="Logo" class="logo">
+      <h1 class="title">Invoice Maker Pro</h1>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="stat-total-sales">$0.00</div>
+        <div class="stat-label">Total Sales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="stat-invoice-count">0</div>
+        <div class="stat-label">Invoices</div>
+      </div>
+      <div class="stat-card warning">
+        <div class="stat-value" id="stat-pending-amount">$0.00</div>
+        <div class="stat-label">Outstanding</div>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <button id="btn-open-dashboard" class="btn btn-primary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+        Open Dashboard
+      </button>
+      <button id="btn-create-invoice" class="btn btn-secondary">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Create Invoice
+      </button>
+    </div>
+
+    <footer class="footer">
+      <span>Offline Mode Active</span>
+      <span class="dot"></span>
+      <span id="version-label">v1.0</span>
+    </footer>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Maker Pro - Dashboard</title>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="icon.png" alt="Logo" class="sidebar-logo">
+        <span class="brand-name">Invoice Pro</span>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a href="#dashboard" class="menu-item active" data-tab="dashboard">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Dashboard
+        </a>
+        <a href="#create-invoice" class="menu-item" data-tab="editor" id="menu-create-invoice">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Create Invoice
+        </a>
+        <a href="#invoices-list" class="menu-item" data-tab="invoices">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Invoices
+        </a>
+        <a href="#customers" class="menu-item" data-tab="customers">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          Customers
+        </a>
+        <a href="#inventory" class="menu-item" data-tab="inventory">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          Inventory
+        </a>
+        <a href="#settings" class="menu-item" data-tab="settings">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+          Settings
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <div class="user-avatar" id="avatar-fallback">CP</div>
+          <div class="user-info">
+            <span class="user-company" id="nav-company-name">Company Profile</span>
+            <span class="user-currency" id="nav-currency">USD ($)</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- TOP BAR -->
+      <header class="top-bar">
+        <div class="top-bar-title">
+          <h2 id="current-section-title">Dashboard</h2>
+        </div>
+        <div class="top-bar-actions">
+          <button id="btn-quick-create" class="btn btn-primary btn-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Quick Invoice
+          </button>
+        </div>
+      </header>
+
+      <!-- SECTION: DASHBOARD -->
+      <section id="tab-dashboard" class="content-section active">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-title">Total Billings</span>
+              <span class="kpi-value" id="kpi-total-billings">$0.00</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-title">Total Collected</span>
+              <span class="kpi-value text-success" id="kpi-total-collected">$0.00</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-title">Balance Due</span>
+              <span class="kpi-value text-warning" id="kpi-total-due">$0.00</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon-wrapper" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+            </div>
+            <div class="kpi-content">
+              <span class="kpi-title">Invoices Issued</span>
+              <span class="kpi-value" id="kpi-invoice-count">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Sales Analytics Chart -->
+          <div class="card dashboard-card">
+            <div class="card-header">
+              <h3 class="card-title">Sales Trends (Last 7 Days)</h3>
+              <span class="card-subtitle">Aggregated daily sales</span>
+            </div>
+            <div class="card-body chart-container" id="sales-chart-wrapper">
+              <!-- SVG chart will be drawn here dynamically -->
+              <svg id="sales-chart" viewBox="0 0 500 200" class="analytics-chart">
+                <!-- Fallback or grid lines -->
+              </svg>
+            </div>
+          </div>
+
+          <!-- Outstanding Invoices -->
+          <div class="card dashboard-card">
+            <div class="card-header">
+              <h3 class="card-title">Outstanding Payments</h3>
+              <span class="card-subtitle">Invoices waiting for clearance</span>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Invoice #</th>
+                      <th>Customer</th>
+                      <th>Due Date</th>
+                      <th>Total</th>
+                      <th>Balance</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-outstanding-list">
+                    <!-- Loaded dynamically -->
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-4">No outstanding invoices. Good job!</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: INVOICE EDITOR -->
+      <section id="tab-editor" class="content-section">
+        <div class="editor-layout">
+          
+          <!-- Left: Input Form -->
+          <div class="form-pane">
+            <div class="pane-section">
+              <div class="pane-section-header">
+                <h3>Template & Style Settings</h3>
+              </div>
+              <div class="settings-row-grid">
+                <div class="form-group">
+                  <label for="editor-template-select">Layout Style</label>
+                  <select id="editor-template-select" class="form-control">
+                    <option value="minimalist">Minimalist (Freelance & Services)</option>
+                    <option value="retail">Detailed Grid (Retail & Store)</option>
+                    <option value="corporate">Corporate (Elegant & Official)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Brand Palette Accent</label>
+                  <div class="color-palette-picker">
+                    <div class="palette-option active" style="background-color: #3b82f6;" data-color="#3b82f6"></div>
+                    <div class="palette-option" style="background-color: #10b981;" data-color="#10b981"></div>
+                    <div class="palette-option" style="background-color: #ef4444;" data-color="#ef4444"></div>
+                    <div class="palette-option" style="background-color: #f59e0b;" data-color="#f59e0b"></div>
+                    <div class="palette-option" style="background-color: #8b5cf6;" data-color="#8b5cf6"></div>
+                    <input type="color" id="editor-custom-color" class="custom-color-input" title="Custom color picker">
+                  </div>
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group">
+                  <label for="editor-font-family">Font Typography</label>
+                  <select id="editor-font-family" class="form-control">
+                    <option value="font-sans">Modern Sans-Serif</option>
+                    <option value="font-serif">Classic Serif</option>
+                    <option value="font-mono">Clean Monospace</option>
+                    <option value="font-playfair">Elegant Playfair</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="editor-font-size">Body Font Size</label>
+                  <select id="editor-font-size" class="form-control">
+                    <option value="fs-sm">Small (12px)</option>
+                    <option value="fs-md" selected>Medium (13px)</option>
+                    <option value="fs-lg">Large (14px)</option>
+                    <option value="fs-xl">Extra Large (15px)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group checkbox-group" style="flex-direction: row; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="opt-letterhead" style="width: 16px; height: 16px; margin: 0;">
+                  <label for="opt-letterhead" style="margin: 0; cursor: pointer;">Print on Custom Letterhead</label>
+                </div>
+                <div class="form-group checkbox-group" style="flex-direction: row; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="opt-single-line-header" style="width: 16px; height: 16px; margin: 0;">
+                  <label for="opt-single-line-header" style="margin: 0; cursor: pointer;">Single Line Company Header</label>
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group">
+                  <label for="opt-company-name-fs">Company Name Font Size (<span id="val-company-name-fs">24px</span>)</label>
+                  <input type="range" id="opt-company-name-fs" class="form-control" min="16" max="48" value="24" style="padding: 0; height: 28px;">
+                </div>
+                <div class="form-group">
+                  <label for="opt-company-details-fs">Company Details Font Size (<span id="val-company-details-fs">11px</span>)</label>
+                  <input type="range" id="opt-company-details-fs" class="form-control" min="9" max="16" value="11" style="padding: 0; height: 28px;">
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group">
+                  <label for="opt-company-name-color">Company Name Color</label>
+                  <input type="color" id="opt-company-name-color" class="form-control" value="#3b82f6" style="padding: 0 4px; height: 38px;">
+                </div>
+                <div class="form-group">
+                  <!-- Empty spacer -->
+                </div>
+              </div>
+            </div>
+
+            <div class="pane-section">
+              <div class="pane-section-header">
+                <h3>Metadata</h3>
+              </div>
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="inv-number">Invoice Number</label>
+                  <input type="text" id="inv-number" class="form-control" placeholder="e.g. INV-1001">
+                </div>
+                <div class="form-group">
+                  <label for="inv-currency">Currency Code</label>
+                  <select id="inv-currency" class="form-control">
+                    <option value="USD">USD ($) - US Dollar</option>
+                    <option value="EUR">EUR (€) - Euro</option>
+                    <option value="GBP">GBP (£) - British Pound</option>
+                    <option value="INR">INR (₹) - Indian Rupee</option>
+                    <option value="PKR">PKR (Rs) - Pakistani Rupee</option>
+                    <option value="AED">AED (د.إ) - UAE Dirham</option>
+                    <option value="SAR">SAR (ر.س) - Saudi Riyal</option>
+                    <option value="SGD">SGD (S$) - Singapore Dollar</option>
+                    <option value="AUD">AUD (A$) - Australian Dollar</option>
+                    <option value="CAD">CAD (C$) - Canadian Dollar</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group">
+                  <label for="inv-date">Issue Date</label>
+                  <input type="date" id="inv-date" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label for="inv-due-date">Due Date</label>
+                  <input type="date" id="inv-due-date" class="form-control">
+                </div>
+              </div>
+              <div class="form-group mt-2">
+                <label for="inv-tax-type">Default Tax Mode</label>
+                <select id="inv-tax-type" class="form-control">
+                  <option value="GST">GST - Goods & Services Tax</option>
+                  <option value="VAT">VAT - Value Added Tax</option>
+                  <option value="TAX">TAX - General Sales Tax</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Seller Details -->
+            <div class="pane-section">
+              <div class="pane-section-header">
+                <h3>Seller Profile (Your Company)</h3>
+              </div>
+              <div class="logo-upload-zone">
+                <div class="logo-preview-box" id="logo-preview-box">
+                  <span class="text-muted text-xs">No Logo</span>
+                </div>
+                <div class="logo-upload-controls">
+                  <label for="company-logo" class="btn btn-secondary btn-sm cursor-pointer">
+                    Upload Company Logo
+                  </label>
+                  <input type="file" id="company-logo" accept="image/*" class="d-none">
+                  <span class="upload-hint">SVG, PNG, or JPG (Square format recommended)</span>
+                  <button type="button" id="btn-remove-logo" class="btn-text text-danger d-none">Remove Logo</button>
+                </div>
+              </div>
+              <div class="form-row-two mt-3">
+                <div class="form-group">
+                  <label for="seller-name">Company Name</label>
+                  <input type="text" id="seller-name" class="form-control" placeholder="Your Business Name">
+                </div>
+                <div class="form-group">
+                  <label for="seller-tax-id">Tax ID / Business Registration</label>
+                  <input type="text" id="seller-tax-id" class="form-control" placeholder="GSTIN/VAT #">
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group">
+                  <label for="seller-phone">Contact Number</label>
+                  <input type="text" id="seller-phone" class="form-control" placeholder="Phone Number">
+                </div>
+                <div class="form-group">
+                  <label for="seller-email">Email Address</label>
+                  <input type="email" id="seller-email" class="form-control" placeholder="billing@yourdomain.com">
+                </div>
+              </div>
+              <div class="form-group mt-2">
+                <label for="seller-address">Billing Address</label>
+                <textarea id="seller-address" class="form-control" rows="2" placeholder="Street, City, State, ZIP"></textarea>
+              </div>
+              <div class="form-group mt-2">
+                <label for="seller-issued-by">Issued By / Representative</label>
+                <input type="text" id="seller-issued-by" class="form-control" placeholder="e.g. Sales Manager, Ghulam Murtaza">
+              </div>
+            </div>
+
+            <!-- Buyer Details -->
+            <div class="pane-section">
+              <div class="pane-section-header justify-between">
+                <h3>Customer Details (Billed To)</h3>
+                <div class="customer-picker-wrapper">
+                  <select id="editor-customer-select" class="form-control-sm">
+                    <option value="">-- Load Saved Customer --</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="buyer-name">Client Name</label>
+                  <input type="text" id="buyer-name" class="form-control" placeholder="Client or Company Name">
+                </div>
+                <div class="form-group">
+                  <label for="buyer-tax-id">Client Tax ID (Optional)</label>
+                  <input type="text" id="buyer-tax-id" class="form-control" placeholder="Tax ID / Registration #">
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group">
+                  <label for="buyer-phone">Phone Number</label>
+                  <input type="text" id="buyer-phone" class="form-control" placeholder="e.g. +923001234567">
+                </div>
+                <div class="form-group">
+                  <label for="buyer-email">Email Address</label>
+                  <input type="email" id="buyer-email" class="form-control" placeholder="client@domain.com">
+                </div>
+              </div>
+              <div class="form-group mt-2">
+                <label for="buyer-address">Shipping/Billing Address</label>
+                <textarea id="buyer-address" class="form-control" rows="2" placeholder="Client Address Details"></textarea>
+              </div>
+            </div>
+
+            <!-- Line Items -->
+            <div class="pane-section">
+              <div class="pane-section-header justify-between">
+                <h3>Line Items</h3>
+                <button type="button" id="btn-add-item" class="btn btn-secondary btn-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Add Item
+                </button>
+              </div>
+              
+              <div class="line-items-editor-container" id="editor-items-list">
+                <!-- Line item row will be appended here dynamically -->
+              </div>
+            </div>
+
+            <!-- Totals and Taxes -->
+            <div class="pane-section">
+              <div class="pane-section-header">
+                <h3>Discounts, Adjustments, and Payments</h3>
+              </div>
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="inv-discount">Discount Value</label>
+                  <div class="input-addon-group">
+                    <input type="number" id="inv-discount" class="form-control" min="0" step="0.01" value="0">
+                    <select id="inv-discount-type" class="addon-select">
+                      <option value="percent">% Percentage</option>
+                      <option value="flat">Flat Value</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="inv-previous-due">Previous Due (Carry Forward)</label>
+                  <input type="number" id="inv-previous-due" class="form-control" min="0" step="0.01" value="0">
+                </div>
+              </div>
+              <div class="form-row-two mt-2">
+                <div class="form-group">
+                  <label for="inv-paid-amount">Amount Paid Already</label>
+                  <input type="number" id="inv-paid-amount" class="form-control" min="0" step="0.01" value="0">
+                </div>
+                <div class="form-group">
+                  <!-- Spacer -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment instructions -->
+            <div class="pane-section">
+              <div class="pane-section-header">
+                <h3>Payment Methods & QR Details</h3>
+              </div>
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="payment-upi-id">UPI ID (VPA) / QR Payment URL</label>
+                  <input type="text" id="payment-upi-id" class="form-control" placeholder="e.g. business@ybl or pay link">
+                </div>
+                <div class="form-group">
+                  <label for="payment-bank-details">Bank Transfer Details</label>
+                  <input type="text" id="payment-bank-details" class="form-control" placeholder="A/C #, IFSC, Bank Name">
+                </div>
+              </div>
+              <div class="form-group mt-2">
+                <label for="inv-terms">Terms & Conditions / Footer Note</label>
+                <textarea id="inv-terms" class="form-control" rows="2" placeholder="Payment due within 15 days. Thank you for your business!"></textarea>
+              </div>
+            </div>
+
+            <!-- Signature Capture -->
+            <div class="pane-section">
+              <div class="pane-section-header justify-between">
+                <h3>Authorized Signature</h3>
+                <button type="button" id="btn-clear-signature" class="btn-text text-muted text-xs">Clear Signature</button>
+              </div>
+              <div class="signature-canvas-container">
+                <canvas id="signature-pad" class="signature-canvas" width="400" height="120"></canvas>
+                <div class="signature-instructions">Draw your signature above with your mouse or stylus</div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="pane-actions-container">
+              <button type="button" id="btn-save-invoice" class="btn btn-primary flex-grow justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                Save Invoice
+              </button>
+              <button type="button" id="btn-reset-invoice" class="btn btn-secondary">Reset</button>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Preview -->
+          <div class="preview-pane">
+            <div class="preview-toolbar">
+              <span class="preview-mode-tag">Realtime Preview</span>
+              <div class="preview-actions">
+                <button id="btn-print-invoice" class="btn btn-primary btn-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                  Print / Save PDF
+                </button>
+                <button id="btn-share-whatsapp" class="btn btn-success btn-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                  Share on WhatsApp
+                </button>
+              </div>
+            </div>
+
+            <!-- Page Container (styled to look like physical A4 sheet) -->
+            <div class="a4-sheet-container">
+              <div id="invoice-render-target" class="template-renderer theme-default minimalist">
+                <!-- Handled via templates in JS -->
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      <!-- SECTION: INVOICES LIST -->
+      <section id="tab-invoices" class="content-section">
+        <div class="card">
+          <div class="card-header flex-between flex-wrap gap-3">
+            <div>
+              <h3 class="card-title">Billing Registry</h3>
+              <span class="card-subtitle">Manage issued invoice records</span>
+            </div>
+            <div class="table-search-filters">
+              <input type="text" id="invoices-search" class="form-control-sm w-48" placeholder="Search Invoice/Client...">
+              <select id="invoices-filter-status" class="form-control-sm">
+                <option value="all">All Statuses</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Invoice #</th>
+                    <th>Date</th>
+                    <th>Customer Name</th>
+                    <th>Total Amount</th>
+                    <th>Balance Due</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="invoices-table-body">
+                  <!-- Generated dynamically -->
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">No invoices found. Click "Create Invoice" to start!</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: CUSTOMERS -->
+      <section id="tab-customers" class="content-section">
+        <div class="settings-grid">
+          
+          <!-- Add/Edit Customer -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Manage Customer</h3>
+              <span class="card-subtitle">Add or edit buyers in your database</span>
+            </div>
+            <div class="card-body">
+              <input type="hidden" id="cust-id">
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="cust-name">Customer Name</label>
+                  <input type="text" id="cust-name" class="form-control" placeholder="e.g. Acme Corp">
+                </div>
+                <div class="form-group">
+                  <label for="cust-tax-id">Tax ID / Business Registration</label>
+                  <input type="text" id="cust-tax-id" class="form-control" placeholder="e.g. GSTIN/VAT #">
+                </div>
+              </div>
+              <div class="form-row-two mt-3">
+                <div class="form-group">
+                  <label for="cust-phone">Contact Number</label>
+                  <input type="text" id="cust-phone" class="form-control" placeholder="e.g. +923001234567">
+                </div>
+                <div class="form-group">
+                  <label for="cust-email">Email Address</label>
+                  <input type="email" id="cust-email" class="form-control" placeholder="e.g. billing@domain.com">
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <label for="cust-address">Billing/Shipping Address</label>
+                <textarea id="cust-address" class="form-control" rows="3" placeholder="Street, City, State, ZIP"></textarea>
+              </div>
+              <div class="pane-actions-container mt-4">
+                <button type="button" id="btn-save-customer" class="btn btn-primary flex-grow justify-center">Save Customer</button>
+                <button type="button" id="btn-clear-customer" class="btn btn-secondary">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customers List -->
+          <div class="card">
+            <div class="card-header flex-between flex-wrap gap-3">
+              <div>
+                <h3 class="card-title">Customer Directory</h3>
+                <span class="card-subtitle">List of buyers and transaction history</span>
+              </div>
+              <div class="table-search-filters">
+                <input type="text" id="customers-search" class="form-control-sm w-48" placeholder="Search Customer...">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Client Name</th>
+                      <th>Contact Info</th>
+                      <th>Invoices</th>
+                      <th>Revenue</th>
+                      <th>Outstanding</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="customers-table-body">
+                    <!-- Loaded dynamically -->
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-4">No customers in register yet. Add one above!</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION: INVENTORY -->
+      <section id="tab-inventory" class="content-section">
+        <div class="settings-grid">
+          
+          <!-- Add/Edit Product -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Manage Stock / Product</h3>
+              <span class="card-subtitle">Add or edit items in your local stock</span>
+            </div>
+            <div class="card-body">
+              <input type="hidden" id="prod-id">
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="prod-name">Product / Service Name</label>
+                  <input type="text" id="prod-name" class="form-control" placeholder="e.g. Wireless Mouse">
+                </div>
+                <div class="form-group">
+                  <label for="prod-sku">SKU / Item Code</label>
+                  <input type="text" id="prod-sku" class="form-control" placeholder="e.g. MS-101">
+                </div>
+              </div>
+              <div class="form-row-two mt-3">
+                <div class="form-group">
+                  <label for="prod-price">Retail Price</label>
+                  <input type="number" id="prod-price" class="form-control" min="0" step="0.01" value="0.00">
+                </div>
+                <div class="form-group">
+                  <label for="prod-stock">Current Stock Quantity</label>
+                  <input type="number" id="prod-stock" class="form-control" min="0" step="any" value="10">
+                </div>
+              </div>
+              <div class="form-row-two mt-3">
+                <div class="form-group">
+                  <label for="prod-tax">Default Tax Rate (%)</label>
+                  <input type="number" id="prod-tax" class="form-control" min="0" max="100" step="0.1" value="18">
+                </div>
+                <div class="form-group">
+                  <!-- spacer -->
+                </div>
+              </div>
+              <div class="pane-actions-container mt-4">
+                <button type="button" id="btn-save-product" class="btn btn-primary flex-grow justify-center">Save Product</button>
+                <button type="button" id="btn-clear-product" class="btn btn-secondary">Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Inventory List -->
+          <div class="card">
+            <div class="card-header flex-between flex-wrap gap-3">
+              <div>
+                <h3 class="card-title">Stock Registry</h3>
+                <span class="card-subtitle">Current stock levels and unit pricing</span>
+              </div>
+              <div class="table-search-filters">
+                <input type="text" id="inventory-search" class="form-control-sm w-48" placeholder="Search SKU/Name...">
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Product Name</th>
+                      <th>SKU</th>
+                      <th>Price</th>
+                      <th>Stock</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="inventory-table-body">
+                    <!-- Loaded dynamically -->
+                    <tr>
+                      <td colspan="6" class="text-center text-muted py-4">No products in inventory yet. Add your first item!</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- SECTION: SETTINGS -->
+      <section id="tab-settings" class="content-section">
+        <div class="settings-grid">
+          
+          <!-- Company Profile Defaults -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Default Settings & Profile</h3>
+              <span class="card-subtitle">Values auto-loaded for new invoices</span>
+            </div>
+            <div class="card-body">
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="settings-company-name">Default Company Name</label>
+                  <input type="text" id="settings-company-name" class="form-control" placeholder="Company Legal Name">
+                </div>
+                <div class="form-group">
+                  <label for="settings-company-tax-id">Default Tax ID</label>
+                  <input type="text" id="settings-company-tax-id" class="form-control" placeholder="e.g. GSTIN/VAT">
+                </div>
+              </div>
+              <div class="form-row-two mt-3">
+                <div class="form-group">
+                  <label for="settings-company-phone">Default Phone</label>
+                  <input type="text" id="settings-company-phone" class="form-control" placeholder="Company phone">
+                </div>
+                <div class="form-group">
+                  <label for="settings-company-email">Default Billing Email</label>
+                  <input type="email" id="settings-company-email" class="form-control" placeholder="billing@domain.com">
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <label for="settings-company-address">Default Billing Address</label>
+                <textarea id="settings-company-address" class="form-control" rows="2" placeholder="Address street info"></textarea>
+              </div>
+              <div class="form-row-three mt-3">
+                <div class="form-group">
+                  <label for="settings-default-currency">Default Currency</label>
+                  <select id="settings-default-currency" class="form-control">
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="INR">INR (₹)</option>
+                    <option value="PKR">PKR (Rs)</option>
+                    <option value="AED">AED (د.إ)</option>
+                    <option value="SAR">SAR (ر.س)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="settings-default-tax-rate">Default Tax %</label>
+                  <input type="number" id="settings-default-tax-rate" class="form-control" min="0" max="100" step="0.1" value="18">
+                </div>
+                <div class="form-group">
+                  <label for="settings-invoice-prefix">Invoice Number Prefix</label>
+                  <input type="text" id="settings-invoice-prefix" class="form-control" value="INV-">
+                </div>
+              </div>
+              <div class="form-row-two mt-3">
+                <div class="form-group">
+                  <label for="settings-default-upi">UPI ID for Payments</label>
+                  <input type="text" id="settings-default-upi" class="form-control" placeholder="UPI ID">
+                </div>
+                <div class="form-group">
+                  <label for="settings-default-bank">Bank Details (A/C, IFSC)</label>
+                  <input type="text" id="settings-default-bank" class="form-control" placeholder="Account Info">
+                </div>
+              </div>
+              <div class="form-group mt-3">
+                <label for="settings-default-terms">Default Terms & Footer Note</label>
+                <textarea id="settings-default-terms" class="form-control" rows="2" placeholder="Terms details"></textarea>
+              </div>
+              
+              <button id="btn-save-settings" class="btn btn-primary mt-4">Save Configuration</button>
+            </div>
+          </div>
+          <!-- Database Backup & Maintenance -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Backup & Restore</h3>
+              <span class="card-subtitle">Export or import your offline invoice data</span>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Export Current Database</label>
+                <p class="text-xs text-muted mb-2">Download all invoices, configurations, and inventory records as a JSON backup file.</p>
+                <button id="btn-backup-export" class="btn btn-secondary btn-sm">Export Backup (JSON)</button>
+              </div>
+              <div class="form-group mt-3">
+                <label for="restore-file-input">Restore Database Backup</label>
+                <p class="text-xs text-muted mb-2">Upload a previously saved JSON file to restore your profile and registry records.</p>
+                <input type="file" id="restore-file-input" accept=".json" class="form-control">
+              </div>
+              <div class="danger-zone-box mt-4">
+                <div style="font-weight: 700; color: var(--danger); margin-bottom: 4px; font-size: 13px;">Danger Zone</div>
+                <p class="text-xs text-muted mb-2">Permanently erase all invoice records and configuration defaults. This action cannot be undone.</p>
+                <button id="btn-clear-db" class="btn btn-danger btn-sm">Clear Entire Database</button>
+              </div>
+            </div>
+          </div>
+          <!-- Security PIN Lock -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Device Security PIN Lock</h3>
+              <span class="card-subtitle">Lock the extension with a 4-digit PIN for shared environments</span>
+            </div>
+            <div class="card-body">
+              <div class="form-row-two">
+                <div class="form-group">
+                  <label for="settings-passcode-enabled">Enable Lock on Startup</label>
+                  <select id="settings-passcode-enabled" class="form-control">
+                    <option value="false">Disabled</option>
+                    <option value="true">Enabled</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="settings-passcode-pin">4-Digit PIN Code</label>
+                  <input type="password" id="settings-passcode-pin" class="form-control" maxlength="4" placeholder="e.g. 1234">
+                </div>
+              </div>
+              <button id="btn-save-security" class="btn btn-secondary mt-4">Save Security Config</button>
+            </div>
+          </div>
+
+          <!-- Help & FAQ Guide -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Help Center & FAQ</h3>
+              <span class="card-subtitle">Frequently asked questions and guides</span>
+            </div>
+            <div class="card-body">
+              <div class="faq-container">
+                <details class="faq-item">
+                  <summary class="faq-question">How does Offline Mode work?</summary>
+                  <div class="faq-answer">
+                    Invoice Pro stores all your invoices, products, and configurations locally in your browser's secure data warehouse (LocalStorage). It functions 100% without an active internet connection.
+                  </div>
+                </details>
+                <details class="faq-item mt-2">
+                  <summary class="faq-question">How do I generate a PDF invoice?</summary>
+                  <div class="faq-answer">
+                    Click the "Print / Save PDF" button in the preview pane. When the print preview displays, select "Save as PDF" as the Destination in Chrome's print prompt, and check that background graphics are enabled.
+                  </div>
+                </details>
+                <details class="faq-item mt-2">
+                  <summary class="faq-question">Are my payment QR codes secure?</summary>
+                  <div class="faq-answer">
+                    Yes. The QR Code generator script is bundled locally inside this extension, meaning your payment info (e.g., UPI ID) is converted directly into an SVG/canvas QR code without hitting external servers.
+                  </div>
+                </details>
+                <details class="faq-item mt-2">
+                  <summary class="faq-question">How do I restore my backup?</summary>
+                  <div class="faq-answer">
+                    Go to Settings -> Click "Restore Data", select your downloaded JSON backup file, and confirm. All records will be imported instantly.
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+      
+    </main>
+  </div>
+  
+  <!-- FULLSCREEN LOCK SCREEN OVERLAY -->
+  <div id="lock-screen" class="lock-screen-overlay d-none">
+    <div class="lock-card">
+      <div class="lock-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+      </div>
+      <h2 class="lock-title">System Locked</h2>
+      <p class="lock-subtitle">Enter your 4-digit PIN to access Invoice Pro</p>
+      
+      <!-- PIN Indicators -->
+      <div class="pin-indicator-row">
+        <div class="pin-dot" id="pin-dot-1"></div>
+        <div class="pin-dot" id="pin-dot-2"></div>
+        <div class="pin-dot" id="pin-dot-3"></div>
+        <div class="pin-dot" id="pin-dot-4"></div>
+      </div>
+      
+      <!-- Keypad -->
+      <div class="keypad-grid">
+        <button class="keypad-btn" data-val="1">1</button>
+        <button class="keypad-btn" data-val="2">2</button>
+        <button class="keypad-btn" data-val="3">3</button>
+        <button class="keypad-btn" data-val="4">4</button>
+        <button class="keypad-btn" data-val="5">5</button>
+        <button class="keypad-btn" data-val="6">6</button>
+        <button class="keypad-btn" data-val="7">7</button>
+        <button class="keypad-btn" data-val="8">8</button>
+        <button class="keypad-btn" data-val="9">9</button>
+        <button class="keypad-btn text-danger" id="btn-keypad-clear" style="font-size: 12px; font-weight:700;">CLR</button>
+        <button class="keypad-btn" data-val="0">0</button>
+        <button class="keypad-btn text-warning" id="btn-keypad-delete" style="font-size: 12px; font-weight:700;">DEL</button>
+      </div>
+      <div class="lock-status-msg text-danger mt-3" id="lock-error-msg"></div>
+    </div>
+  </div>
+
+  <script src="qrcode.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
