@@ -23,7 +23,8 @@ let state = {
   activeTab: 'dashboard',
   editingInvoiceId: null,
   accentColor: '#3b82f6',
-  signatureImage: ''
+  signatureImage: '',
+  customerSignatureImage: ''
 };
 
 // Security Entry Lock State
@@ -32,6 +33,8 @@ let pinAttempt = '';
 // Signature Drawing pad logic
 let isDrawing = false;
 let sigCanvas, sigCtx;
+let isCustDrawing = false;
+let custSigCanvas, custSigCtx;
 
 // DOM Elements cache
 let elements = {};
@@ -42,6 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadData();
   setupEventListeners();
   setupSignaturePad();
+  setupCustomerSignaturePad();
   
   // Handle default tab routing on load
   handleHashRouting();
@@ -86,7 +90,9 @@ function initDOMElements() {
     'prod-id', 'prod-name', 'prod-sku', 'prod-price', 'prod-stock', 'prod-tax',
     'btn-save-product', 'btn-clear-product', 'inventory-search', 'inventory-table-body',
     'opt-letterhead', 'opt-single-line-header', 'opt-company-name-fs', 'opt-company-details-fs',
-    'opt-company-name-color', 'seller-issued-by', 'inv-previous-due', 'val-company-name-fs', 'val-company-details-fs'
+    'opt-company-name-color', 'seller-issued-by', 'inv-previous-due', 'val-company-name-fs', 'val-company-details-fs',
+    'opt-customer-name-fs', 'opt-customer-details-fs', 'val-customer-name-fs', 'val-customer-details-fs',
+    'customer-signature-pad', 'btn-clear-customer-sig'
   ];
   
   ids.forEach(id => {
@@ -309,6 +315,24 @@ function setupEventListeners() {
     elements['opt-company-details-fs'].addEventListener('input', (e) => {
       if (elements['val-company-details-fs']) {
         elements['val-company-details-fs'].textContent = e.target.value + 'px';
+      }
+      recalculateInvoice();
+    });
+  }
+
+  if (elements['opt-customer-name-fs']) {
+    elements['opt-customer-name-fs'].addEventListener('input', (e) => {
+      if (elements['val-customer-name-fs']) {
+        elements['val-customer-name-fs'].textContent = e.target.value + 'px';
+      }
+      recalculateInvoice();
+    });
+  }
+
+  if (elements['opt-customer-details-fs']) {
+    elements['opt-customer-details-fs'].addEventListener('input', (e) => {
+      if (elements['val-customer-details-fs']) {
+        elements['val-customer-details-fs'].textContent = e.target.value + 'px';
       }
       recalculateInvoice();
     });
@@ -815,6 +839,112 @@ function setupSignaturePad() {
   });
 }
 
+// Customer Receiving Signature Pad Setup
+function setupCustomerSignaturePad() {
+  custSigCanvas = elements['customer-signature-pad'];
+  if (!custSigCanvas) return;
+
+  custSigCtx = custSigCanvas.getContext('2d');
+
+  const clearBtn = elements['btn-clear-customer-sig'];
+
+  // Helper: draw line smoothly
+  function drawLine(ctx, x, y) {
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.stroke();
+  }
+
+  // Mouse events
+  custSigCanvas.addEventListener('mousedown', (e) => {
+    isCustDrawing = true;
+    const pos = getMousePos(custSigCanvas, e);
+    custSigCtx.beginPath();
+    custSigCtx.moveTo(pos.x, pos.y);
+  });
+
+  custSigCanvas.addEventListener('mousemove', (e) => {
+    if (!isCustDrawing) return;
+    const pos = getMousePos(custSigCanvas, e);
+    drawLine(custSigCtx, pos.x, pos.y);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (isCustDrawing) {
+      isCustDrawing = false;
+      saveCustomerSignaturePadImage();
+    }
+  });
+
+  // Touch / Stylus events (passive:false to allow preventDefault for scroll blocking)
+  custSigCanvas.addEventListener('touchstart', (e) => {
+    isCustDrawing = true;
+    const pos = getTouchPos(custSigCanvas, e);
+    custSigCtx.beginPath();
+    custSigCtx.moveTo(pos.x, pos.y);
+    e.preventDefault();
+  }, { passive: false });
+
+  custSigCanvas.addEventListener('touchmove', (e) => {
+    if (!isCustDrawing) return;
+    const pos = getTouchPos(custSigCanvas, e);
+    drawLine(custSigCtx, pos.x, pos.y);
+    e.preventDefault();
+  }, { passive: false });
+
+  custSigCanvas.addEventListener('touchend', () => {
+    if (isCustDrawing) {
+      isCustDrawing = false;
+      saveCustomerSignaturePadImage();
+    }
+  });
+
+  // Pointer events (stylus support for Surface / iPad Apple Pencil)
+  custSigCanvas.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'pen' || e.pointerType === 'touch') {
+      isCustDrawing = true;
+      const pos = getMousePos(custSigCanvas, e);
+      custSigCtx.beginPath();
+      custSigCtx.moveTo(pos.x, pos.y);
+    }
+  });
+  custSigCanvas.addEventListener('pointermove', (e) => {
+    if (!isCustDrawing || (e.pointerType !== 'pen' && e.pointerType !== 'touch')) return;
+    const pos = getMousePos(custSigCanvas, e);
+    drawLine(custSigCtx, pos.x, pos.y);
+  });
+  custSigCanvas.addEventListener('pointerup', () => {
+    if (isCustDrawing) {
+      isCustDrawing = false;
+      saveCustomerSignaturePadImage();
+    }
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      custSigCtx.clearRect(0, 0, custSigCanvas.width, custSigCanvas.height);
+      state.customerSignatureImage = '';
+      recalculateInvoice();
+    });
+  }
+}
+
+function saveCustomerSignaturePadImage() {
+  if (!custSigCanvas) return;
+  const blank = document.createElement('canvas');
+  blank.width = custSigCanvas.width;
+  blank.height = custSigCanvas.height;
+  if (custSigCanvas.toDataURL() === blank.toDataURL()) {
+    state.customerSignatureImage = '';
+  } else {
+    state.customerSignatureImage = custSigCanvas.toDataURL();
+  }
+  recalculateInvoice();
+}
+
 function getMousePos(canvas, evt) {
   const rect = canvas.getBoundingClientRect();
   return {
@@ -949,7 +1079,10 @@ function recalculateInvoice() {
     optSingleLineHeader: elements['opt-single-line-header'] ? elements['opt-single-line-header'].checked : false,
     optCompanyNameFs: elements['opt-company-name-fs'] ? elements['opt-company-name-fs'].value : '24',
     optCompanyDetailsFs: elements['opt-company-details-fs'] ? elements['opt-company-details-fs'].value : '11',
-    optCompanyNameColor: elements['opt-company-name-color'] ? elements['opt-company-name-color'].value : '#3b82f6'
+    optCompanyNameColor: elements['opt-company-name-color'] ? elements['opt-company-name-color'].value : '#3b82f6',
+    optCustomerNameFs: elements['opt-customer-name-fs'] ? elements['opt-customer-name-fs'].value : '14',
+    optCustomerDetailsFs: elements['opt-customer-details-fs'] ? elements['opt-customer-details-fs'].value : '11',
+    customerSignature: state.customerSignatureImage
   };
 
   // Render the invoice preview DOM on the right
@@ -1071,8 +1204,8 @@ function renderInvoicePreviewTemplate(inv) {
     <div class="tpl-billing-row">
       <div class="tpl-bill-to">
         <div class="tpl-section-title">Billed To</div>
-        <div class="tpl-client-name">${inv.buyer.name || 'Client Name'}</div>
-        <div class="tpl-client-details">
+        <div class="tpl-client-name" style="font-size: ${inv.optCustomerNameFs}px;">${inv.buyer.name || 'Client Name'}</div>
+        <div class="tpl-client-details" style="font-size: ${inv.optCustomerDetailsFs}px;">
           ${inv.buyer.address ? inv.buyer.address.replace(/\n/g, '<br>') : ''}<br>
           ${inv.buyer.phone ? 'Phone: ' + inv.buyer.phone : ''} ${inv.buyer.email ? ' | Email: ' + inv.buyer.email : ''}
           ${inv.buyer.taxId ? '<br>Tax Registration: ' + inv.buyer.taxId : ''}
@@ -1140,10 +1273,19 @@ function renderInvoicePreviewTemplate(inv) {
           <span>${fC(inv.balance)}</span>
         </div>
 
-        <!-- Authorized Signature -->
-        <div class="tpl-signature-wrapper">
-          ${sigHtml}
-          <div class="tpl-signature-lbl">${inv.seller.issuedBy || 'Authorized Representative'}</div>
+        <!-- Dual Signature Row: Customer Left, Seller Right -->
+        <div class="tpl-dual-sig-row">
+          <div class="tpl-sig-col">
+            ${inv.customerSignature
+              ? `<img src="${inv.customerSignature}" class="tpl-signature-img" alt="Customer Signature">`
+              : `<div style="height: 40px; border-bottom: 1.5px solid #9ca3af; width: 130px; margin-bottom: 4px;"></div>`
+            }
+            <div class="tpl-signature-lbl">Receiving Customer</div>
+          </div>
+          <div class="tpl-sig-col" style="text-align:right;">
+            ${sigHtml}
+            <div class="tpl-signature-lbl">${inv.seller.issuedBy || 'Authorized Representative'}</div>
+          </div>
         </div>
       </div>
     </div>

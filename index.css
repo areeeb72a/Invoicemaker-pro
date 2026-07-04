@@ -724,14 +724,53 @@ body {
   padding: 8px;
 }
 
+/* Dual Signature Grid (Customer + Seller side by side) */
+.dual-signature-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Individual signature box */
+.sig-box {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.sig-box-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sig-box-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 2px;
+}
+
+.sig-box-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
 /* Signature Canvas */
 .signature-canvas-container {
-  border: 1px solid var(--border);
-  background-color: var(--bg-input);
+  border: 2px dashed var(--border);
+  background-color: white;
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
-  height: 120px;
+  height: 130px;
+  transition: border-color 0.2s;
+}
+
+.signature-canvas-container:hover {
+  border-color: var(--primary);
 }
 
 .signature-canvas {
@@ -739,18 +778,27 @@ body {
   height: 100%;
   cursor: crosshair;
   background-color: white;
+  touch-action: none;
+  display: block;
 }
 
 .signature-instructions {
   position: absolute;
-  bottom: 8px;
+  bottom: 6px;
   right: 8px;
   font-size: 9px;
-  color: rgba(0, 0, 0, 0.45);
+  color: rgba(0, 0, 0, 0.4);
   pointer-events: none;
-  background-color: rgba(255,255,255,0.85);
+  background-color: rgba(255,255,255,0.9);
   padding: 2px 6px;
   border-radius: 4px;
+}
+
+/* Responsive: stack signatures on small screens */
+@media (max-width: 640px) {
+  .dual-signature-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Buttons Styling */
@@ -1161,7 +1209,21 @@ body {
   margin-top: 4px;
 }
 
-/* Sign-off element */
+/* Dual signature row in invoice template (Customer Left | Seller Right) */
+.tpl-dual-sig-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 24px;
+  gap: 12px;
+}
+
+.tpl-sig-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Keep backward compat */
 .tpl-signature-wrapper {
   display: flex;
   flex-direction: column;
