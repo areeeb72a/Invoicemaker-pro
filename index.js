@@ -92,7 +92,7 @@ function initDOMElements() {
     'opt-letterhead', 'opt-single-line-header', 'opt-company-name-fs', 'opt-company-details-fs',
     'opt-company-name-color', 'seller-issued-by', 'inv-previous-due', 'val-company-name-fs', 'val-company-details-fs',
     'opt-customer-name-fs', 'opt-customer-details-fs', 'val-customer-name-fs', 'val-customer-details-fs',
-    'customer-signature-pad', 'btn-clear-customer-sig'
+    'customer-signature-pad', 'btn-clear-customer-sig', 'customer-sig-name'
   ];
   
   ids.forEach(id => {
@@ -277,7 +277,7 @@ function setupEventListeners() {
     'seller-name', 'seller-tax-id', 'seller-phone', 'seller-email', 'seller-address', 'seller-issued-by',
     'buyer-name', 'buyer-tax-id', 'buyer-phone', 'buyer-email', 'buyer-address',
     'inv-discount', 'inv-discount-type', 'inv-paid-amount', 'inv-previous-due',
-    'payment-upi-id', 'payment-bank-details', 'inv-terms'
+    'payment-upi-id', 'payment-bank-details', 'inv-terms', 'customer-sig-name'
   ];
   
   inputChangeListeners.forEach(id => {
@@ -1082,7 +1082,8 @@ function recalculateInvoice() {
     optCompanyNameColor: elements['opt-company-name-color'] ? elements['opt-company-name-color'].value : '#3b82f6',
     optCustomerNameFs: elements['opt-customer-name-fs'] ? elements['opt-customer-name-fs'].value : '14',
     optCustomerDetailsFs: elements['opt-customer-details-fs'] ? elements['opt-customer-details-fs'].value : '11',
-    customerSignature: state.customerSignatureImage
+    customerSignature: state.customerSignatureImage,
+    customerSigName: elements['customer-sig-name'] ? elements['customer-sig-name'].value : ''
   };
 
   // Render the invoice preview DOM on the right
@@ -1280,7 +1281,7 @@ function renderInvoicePreviewTemplate(inv) {
               ? `<img src="${inv.customerSignature}" class="tpl-signature-img" alt="Customer Signature">`
               : `<div style="height: 40px; border-bottom: 1.5px solid #9ca3af; width: 130px; margin-bottom: 4px;"></div>`
             }
-            <div class="tpl-signature-lbl">Receiving Customer</div>
+            <div class="tpl-signature-lbl">${inv.customerSigName || 'Receiving Customer'}</div>
           </div>
           <div class="tpl-sig-col" style="text-align:right;">
             ${sigHtml}
