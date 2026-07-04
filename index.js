@@ -171,38 +171,66 @@ function saveInvoices() {
 // Setup Event Listeners
 function setupEventListeners() {
 
-  // Sidebar Toggle (Hamburger button)
+  // ── Sidebar Toggle (Hamburger) ─────────────────────────────────────
   const sidebarToggleBtn = document.getElementById('btn-sidebar-toggle');
   const sidebar = document.querySelector('.sidebar');
   const sidebarOverlay = document.getElementById('sidebar-overlay');
 
+  // Helper: detect mobile/tablet viewport
+  function isMobileView() {
+    return window.innerWidth <= 1024;
+  }
+
+  // Open sidebar (mobile overlay mode)
+  function openSidebarMobile() {
+    sidebar.classList.add('sidebar-open');
+    sidebar.classList.remove('collapsed');
+    if (sidebarOverlay) sidebarOverlay.classList.add('active');
+  }
+
+  // Close sidebar (mobile overlay mode)
+  function closeSidebarMobile() {
+    sidebar.classList.remove('sidebar-open');
+    if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+  }
+
   if (sidebarToggleBtn && sidebar) {
     sidebarToggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      if (sidebarOverlay) {
-        // On small screens show overlay, on large screens don't
-        if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
-          sidebarOverlay.classList.add('active');
+      if (isMobileView()) {
+        // Mobile/Tablet: slide-in drawer with overlay
+        if (sidebar.classList.contains('sidebar-open')) {
+          closeSidebarMobile();
         } else {
-          sidebarOverlay.classList.remove('active');
+          openSidebarMobile();
         }
+      } else {
+        // Desktop: collapse by shrinking width
+        sidebar.classList.remove('sidebar-open');
+        if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+        sidebar.classList.toggle('collapsed');
+        // Recalculate invoice preview after transition
+        setTimeout(() => fitPreviewSheet(), 320);
       }
-      // Recalculate invoice preview after sidebar transition completes
-      setTimeout(() => {
-        fitPreviewSheet();
-      }, 320);
     });
   }
 
   // Clicking overlay closes sidebar (mobile)
   if (sidebarOverlay) {
     sidebarOverlay.addEventListener('click', () => {
-      if (sidebar) sidebar.classList.add('collapsed');
-      sidebarOverlay.classList.remove('active');
+      closeSidebarMobile();
     });
   }
 
-  // Sidebar tab navigation
+  // On window resize: clean up mismatched states
+  window.addEventListener('resize', () => {
+    if (!isMobileView()) {
+      // Switched to desktop: ensure mobile open state is removed
+      if (sidebar) sidebar.classList.remove('sidebar-open');
+      if (sidebarOverlay) sidebarOverlay.classList.remove('active');
+    }
+  });
+
+  // ── Sidebar tab navigation ──────────────────────────────────────────
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', (e) => {
       e.preventDefault();
@@ -211,8 +239,43 @@ function setupEventListeners() {
         clearEditorForm();
       }
       navigateToTab(tab);
+      // Auto-close sidebar on mobile after navigation
+      if (isMobileView()) {
+        closeSidebarMobile();
+      }
     });
   });
+
+  // ── Mobile Edit / Preview Tab Switcher ─────────────────────────────
+  const mobileTabSwitcher = document.getElementById('mobile-tab-switcher');
+  if (mobileTabSwitcher) {
+    mobileTabSwitcher.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        // Update active state
+        mobileTabSwitcher.querySelectorAll('.mobile-tab-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const pane = btn.getAttribute('data-pane');
+        const formPane = document.querySelector('.form-pane');
+        const previewPane = document.querySelector('.preview-pane');
+
+        if (pane === 'form') {
+          if (formPane) formPane.style.display = '';
+          if (previewPane) previewPane.style.display = 'none';
+        } else {
+          if (formPane) formPane.style.display = 'none';
+          if (previewPane) previewPane.style.display = '';
+          // Trigger preview recalculation after becoming visible
+          setTimeout(() => {
+            recalculateInvoice();
+            fitPreviewSheet();
+          }, 50);
+        }
+      });
+    });
+  }
+
+
   
   // Quick Create buttons
   if (elements['btn-quick-create']) {

@@ -1613,98 +1613,328 @@ body {
   color: rgba(255,255,255,0.7);
 }
 
-/* ==========================================
-   MOBILE & TABLET RESPONSIVE OVERRIDES
-   ========================================== */
+/* =====================================================
+   MOBILE TAB SWITCHER (Edit / Preview) — hidden on desktop
+   ===================================================== */
+.mobile-tab-switcher {
+  display: none; /* shown only via media query */
+  gap: 0;
+  margin-bottom: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.mobile-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.mobile-tab-btn.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.mobile-tab-btn:not(.active):hover {
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+}
+
+/* =====================================================
+   TABLET & MOBILE — SIDEBAR AS FIXED OVERLAY DRAWER
+   ===================================================== */
 @media (max-width: 1024px) {
-  .app-container {
-    flex-direction: column;
-  }
 
-  .sidebar {
-    width: 100%;
+  /* Body: allow scroll on mobile (keyboard-safe) */
+  body {
     height: auto;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+    overflow: auto;
   }
 
-  .sidebar-brand {
-    padding: 16px 20px;
-  }
-
-  .sidebar-menu {
+  /* App container: stay row, sidebar is now an overlay */
+  .app-container {
     flex-direction: row;
-    overflow-x: auto;
-    padding: 10px 16px;
-    gap: 8px;
+    height: 100%;
+    min-height: 100vh;
   }
 
-  .menu-item {
-    padding: 8px 12px;
-    white-space: nowrap;
+  /* Sidebar: fixed left drawer, slides in/out */
+  .sidebar {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    height: 100vh !important;
+    width: 260px !important;
+    min-width: 260px !important;
+    transform: translateX(-270px);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 200 !important;
+    border-right: 1px solid var(--border) !important;
+    overflow-y: auto;
   }
 
+  /* Sidebar open: slide in from left */
+  .sidebar.sidebar-open {
+    transform: translateX(0) !important;
+  }
+
+  /* Override collapsed behavior on mobile — use transform instead */
+  .sidebar.collapsed {
+    width: 260px !important;
+    min-width: 260px !important;
+    border-right: 1px solid var(--border) !important;
+    transform: translateX(-270px) !important;
+  }
+
+  /* Keep sidebar inner content fully visible (not faded) */
+  .sidebar.collapsed .sidebar-brand,
+  .sidebar.collapsed .sidebar-menu,
+  .sidebar.collapsed .sidebar-footer {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* Sidebar menu: vertical (restored from old horizontal override) */
+  .sidebar-menu {
+    flex-direction: column !important;
+    overflow-x: hidden !important;
+    overflow-y: auto;
+    padding: 20px 12px;
+    gap: 6px;
+  }
+
+  /* Restore sidebar footer visibility */
   .sidebar-footer {
-    display: none;
+    display: flex !important;
   }
 
+  /* Menu items: normal vertical layout */
+  .menu-item {
+    padding: 12px 16px;
+    white-space: normal;
+  }
+
+  /* Main content: full width (sidebar doesn't push it) */
   .main-content {
-    height: calc(100vh - 120px);
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
   }
 
+  /* Top bar */
   .top-bar {
-    padding: 12px 20px;
+    padding: 12px 16px;
   }
 
+  /* Content sections */
   .content-section {
     padding: 16px;
   }
 
+  /* Editor: stacked layout */
   .editor-layout {
     grid-template-columns: 1fr;
     height: auto;
-    gap: 20px;
+    gap: 16px;
+    padding-bottom: 20px;
   }
 
   .form-pane {
     height: auto;
     max-height: none;
+    padding: 16px;
+    overflow-y: visible;
   }
 
   .preview-pane {
     height: auto;
+    min-height: 400px;
   }
 
   .a4-sheet-container {
     padding: 10px;
-    min-height: 400px;
-    justify-content: center;
+    min-height: 350px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
+  /* Mobile tab switcher: show */
+  .mobile-tab-switcher {
+    display: flex;
+  }
+
+  /* Settings & dashboard */
   .settings-grid {
     grid-template-columns: 1fr;
   }
-  
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
+
+  /* KPI: 2 columns on tablet */
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-@media (max-width: 480px) {
-  .kpi-grid {
+/* =====================================================
+   MOBILE PHONES — ≤ 768px
+   ===================================================== */
+@media (max-width: 768px) {
+
+  /* Form 2-col rows → single column */
+  .form-row-two {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
+  /* Slider rows: stack vertically */
+  .form-row-two:has(input[type="range"]) {
+    grid-template-columns: 1fr;
+  }
+
+  /* Top bar: tighter */
+  .top-bar {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .top-bar-left h2 {
+    font-size: 17px;
+  }
+
+  /* Section padding */
+  .content-section {
+    padding: 12px;
+  }
+
+  .pane-section {
+    padding: 12px;
+  }
+
+  /* Form pane */
+  .form-pane {
+    padding: 12px;
+    gap: 16px;
+  }
+
+  /* A4 preview: full width scrollable */
+  .a4-sheet-container {
+    padding: 6px;
+    overflow-x: auto;
+  }
+
+  /* Preview toolbar wraps */
+  .preview-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .preview-actions {
+    gap: 6px;
+  }
+
+  .preview-actions .btn-sm {
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  /* Palette options wrap */
+  .palette-options {
+    flex-wrap: wrap;
+  }
+
+  /* Signature boxes stack */
+  .dual-signature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Invoice items table: tighter */
   .item-editor-row {
-    grid-template-columns: 1fr 50px 70px 50px 30px;
+    grid-template-columns: 1fr 50px 75px 55px 32px;
+    gap: 5px;
+    padding: 6px;
+  }
+
+  /* Pane actions: full width */
+  .pane-actions-container {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pane-actions-container .btn {
+    flex: 1;
+    min-width: 120px;
+  }
+}
+
+/* =====================================================
+   SMALL PHONES — ≤ 480px
+   ===================================================== */
+@media (max-width: 480px) {
+
+  /* KPI: single column */
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Top bar title */
+  .top-bar-left h2 {
+    font-size: 15px;
+  }
+
+  /* Hide Quick Invoice button label, show only + icon */
+  .btn-label {
+    display: none;
+  }
+
+  /* Sidebar toggle button: slightly smaller */
+  .sidebar-toggle-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Item editor: compact */
+  .item-editor-row {
+    grid-template-columns: 1fr 44px 68px 48px 28px;
     gap: 4px;
     padding: 4px;
   }
-  
+
   .item-editor-row .form-control {
     padding: 6px 8px;
     font-size: 12px;
   }
+
+  /* Preview actions: icon only (hide text on small screens) */
+  .preview-actions .btn-sm {
+    font-size: 11px;
+    padding: 6px 8px;
+  }
+
+  /* Section padding: minimal */
+  .content-section {
+    padding: 8px;
+  }
+
+  .a4-sheet-container {
+    padding: 4px;
+  }
 }
+
 
