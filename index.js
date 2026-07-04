@@ -164,6 +164,38 @@ function saveInvoices() {
 
 // Setup Event Listeners
 function setupEventListeners() {
+
+  // Sidebar Toggle (Hamburger button)
+  const sidebarToggleBtn = document.getElementById('btn-sidebar-toggle');
+  const sidebar = document.querySelector('.sidebar');
+  const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+  if (sidebarToggleBtn && sidebar) {
+    sidebarToggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      if (sidebarOverlay) {
+        // On small screens show overlay, on large screens don't
+        if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
+          sidebarOverlay.classList.add('active');
+        } else {
+          sidebarOverlay.classList.remove('active');
+        }
+      }
+      // Recalculate invoice preview after sidebar transition completes
+      setTimeout(() => {
+        fitPreviewSheet();
+      }, 320);
+    });
+  }
+
+  // Clicking overlay closes sidebar (mobile)
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', () => {
+      if (sidebar) sidebar.classList.add('collapsed');
+      sidebarOverlay.classList.remove('active');
+    });
+  }
+
   // Sidebar tab navigation
   document.querySelectorAll('.menu-item').forEach(item => {
     item.addEventListener('click', (e) => {
