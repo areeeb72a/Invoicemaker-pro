@@ -514,6 +514,36 @@ body {
   color: #fbbf24;
 }
 
+/* Reprint counter badge inside button */
+.reprint-badge {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: monospace;
+  letter-spacing: 0.05em;
+  margin-left: 4px;
+}
+
+/* Paid rows: subtle green-tinted background */
+tr.row-paid {
+  background-color: rgba(16, 185, 129, 0.04);
+}
+
+tr.row-paid td {
+  opacity: 0.85;
+}
+
+/* Action cell: wrap buttons on small screens */
+.d-flex.flex-wrap {
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+
 /* Forms & Editor Layout */
 .editor-layout {
   display: grid;

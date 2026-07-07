@@ -1904,65 +1904,96 @@ function renderInvoicesListTable() {
   const fC = (val) => `${symbol}${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const filtered = state.invoices.filter(inv => {
-    // Search
     const numMatch = inv.number.toLowerCase().includes(search);
     const nameMatch = inv.buyer.name.toLowerCase().includes(search);
     const matchesSearch = numMatch || nameMatch;
-    
-    // Filter
-    if (filter === 'paid') {
-      return matchesSearch && inv.balance <= 0;
-    } else if (filter === 'pending') {
-      return matchesSearch && inv.balance > 0;
-    }
+    if (filter === 'paid') return matchesSearch && inv.balance <= 0;
+    if (filter === 'pending') return matchesSearch && inv.balance > 0;
     return matchesSearch;
   });
 
-  // Sort by date desc (newest first)
   filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="7" class="text-center text-muted py-4">No matching invoices found.</td>
-      </tr>
-    `;
+    tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">No matching invoices found.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = filtered.map(inv => {
     const isPaid = inv.balance <= 0;
-    const badge = isPaid 
-      ? `<span class="status-badge paid">Paid</span>` 
+    const badge = isPaid
+      ? `<span class="status-badge paid">Paid</span>`
       : `<span class="status-badge pending">Pending</span>`;
 
+    // Reprint counter label
+    const reprintCount = inv.reprintCount || 0;
+    const reprintLabel = reprintCount > 0
+      ? `<span class="reprint-badge">#${String(reprintCount).padStart(3,'0')}</span>`
+      : '';
+
+    // Action buttons
+    const markPaidBtn = !isPaid
+      ? `<button class="btn btn-success btn-sm btn-tbl-pay" data-id="${inv.id}">
+           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+           Mark Paid
+         </button>`
+      : '';
+
+    // Print button (always visible)
+    const printBtn = `<button class="btn btn-primary btn-sm btn-tbl-print" data-id="${inv.id}" title="Print / Save PDF">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        Print
+      </button>`;
+
+    // Edit: only for unpaid invoices
+    const editBtn = !isPaid
+      ? `<button class="btn btn-secondary btn-sm btn-tbl-edit" data-id="${inv.id}">Edit</button>`
+      : `<button class="btn btn-secondary btn-sm btn-tbl-reprint" data-id="${inv.id}" title="Reprint (count: ${reprintCount})">
+           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.73"></path></svg>
+           Reprint ${reprintLabel}
+         </button>`;
+
+    const deleteBtn = `<button class="btn btn-danger btn-sm btn-tbl-del" data-id="${inv.id}">Delete</button>`;
+
     return `
-      <tr>
+      <tr class="${isPaid ? 'row-paid' : ''}">
         <td><strong>${inv.number}</strong></td>
         <td>${formatDate(inv.date)}</td>
         <td>${inv.buyer.name || 'Unsaved'}</td>
         <td>${fC(inv.total)}</td>
-        <td><span class="${inv.balance > 0 ? 'text-warning' : ''}">${fC(inv.balance)}</span></td>
+        <td><span class="${inv.balance > 0 ? 'text-warning' : 'text-success'}">${fC(inv.balance)}</span></td>
         <td>${badge}</td>
         <td>
-          <div class="d-flex gap-2">
-            ${!isPaid ? `<button class="btn btn-success btn-sm btn-tbl-pay" data-id="${inv.id}">Mark Paid</button>` : ''}
-            <button class="btn btn-secondary btn-sm btn-tbl-edit" data-id="${inv.id}">Edit</button>
-            <button class="btn btn-danger btn-sm btn-tbl-del" data-id="${inv.id}">Delete</button>
+          <div class="d-flex gap-2 flex-wrap">
+            ${markPaidBtn}
+            ${printBtn}
+            ${editBtn}
+            ${deleteBtn}
           </div>
         </td>
       </tr>
     `;
   }).join('');
 
-  // Bind Actions
+  // ── Bind: Mark Paid ──────────────────────────────────────────────────
   tbody.querySelectorAll('.btn-tbl-pay').forEach(btn => {
     btn.addEventListener('click', () => {
       const invId = btn.getAttribute('data-id');
-      markInvoiceAsPaid(invId);
+      if (confirm('Mark this invoice as fully paid? This will lock editing.')) {
+        markInvoiceAsPaid(invId);
+      }
     });
   });
-  
+
+  // ── Bind: Print (from list) ──────────────────────────────────────────
+  tbody.querySelectorAll('.btn-tbl-print').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const invId = btn.getAttribute('data-id');
+      printInvoiceById(invId);
+    });
+  });
+
+  // ── Bind: Edit (only pending) ────────────────────────────────────────
   tbody.querySelectorAll('.btn-tbl-edit').forEach(btn => {
     btn.addEventListener('click', () => {
       const invId = btn.getAttribute('data-id');
@@ -1970,6 +2001,15 @@ function renderInvoicesListTable() {
     });
   });
 
+  // ── Bind: Reprint (paid invoices) ────────────────────────────────────
+  tbody.querySelectorAll('.btn-tbl-reprint').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const invId = btn.getAttribute('data-id');
+      reprintPaidInvoice(invId);
+    });
+  });
+
+  // ── Bind: Delete ─────────────────────────────────────────────────────
   tbody.querySelectorAll('.btn-tbl-del').forEach(btn => {
     btn.addEventListener('click', () => {
       const invId = btn.getAttribute('data-id');
@@ -1985,10 +2025,73 @@ function markInvoiceAsPaid(invoiceId) {
   if (inv) {
     inv.paid = inv.total;
     inv.balance = 0;
+    inv.paidAt = new Date().toISOString();
+    inv.reprintCount = 0; // initialise reprint counter
     saveInvoices();
     renderInvoicesListTable();
   }
 }
+
+// Print any saved invoice by ID (loads to editor temporarily and prints)
+function printInvoiceById(invoiceId) {
+  const inv = state.invoices.find(i => i.id === invoiceId);
+  if (!inv) return;
+  // Load into editor/preview silently then print
+  const prevEditId = state.editingInvoiceId;
+  loadInvoiceToEditor(invoiceId);
+  setTimeout(() => {
+    window.print();
+    // Restore previous editing state after print dialog closes
+    if (prevEditId && prevEditId !== invoiceId) {
+      state.editingInvoiceId = prevEditId;
+    }
+  }, 400);
+}
+
+// Reprint a paid invoice — increments counter, renders watermark, prints
+function reprintPaidInvoice(invoiceId) {
+  const inv = state.invoices.find(i => i.id === invoiceId);
+  if (!inv) return;
+
+  // Increment reprint counter
+  inv.reprintCount = (inv.reprintCount || 0) + 1;
+  saveInvoices();
+
+  // Load into preview with reprint watermark
+  loadInvoiceToEditor(invoiceId);
+  setTimeout(() => {
+    // Inject reprint stamp into the rendered invoice before printing
+    const target = elements['invoice-render-target'];
+    if (target) {
+      const count = inv.reprintCount;
+      const ordinals = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th'];
+      const ordinal = ordinals[count] || `${count}th`;
+      const countStr = String(count).padStart(3, '0');
+      // Add reprint notice
+      const stamp = document.createElement('div');
+      stamp.id = 'reprint-stamp';
+      stamp.style.cssText = `
+        position: absolute; bottom: 18px; left: 18px;
+        font-size: 9px; color: #6b7280; font-weight: 700;
+        font-family: monospace; letter-spacing: 0.05em;
+        border: 1px solid #d1d5db; padding: 3px 8px;
+        border-radius: 4px; background: rgba(255,255,255,0.9);
+        z-index: 10;
+      `;
+      stamp.textContent = `${ordinal} Reprint — ${countStr}`;
+      // Remove old stamp if any
+      const old = target.querySelector('#reprint-stamp');
+      if (old) old.remove();
+      // Make sure target is positioned relatively
+      target.style.position = 'relative';
+      target.appendChild(stamp);
+    }
+    window.print();
+    renderInvoicesListTable();
+  }, 400);
+}
+
+
 
 function deleteInvoice(invoiceId) {
   state.invoices = state.invoices.filter(i => i.id !== invoiceId);
