@@ -825,9 +825,15 @@ function handleLogoUpload(e) {
 }
 
 function showLogoPreview(dataUri) {
-  elements['logo-preview-box'].innerHTML = `<img src="${dataUri}" alt="Logo">`;
-  elements['btn-remove-logo'].classList.remove('d-none');
+  if (elements['logo-preview-box']) elements['logo-preview-box'].innerHTML = `<img src="${dataUri}" alt="Logo">`;
+  if (elements['btn-remove-logo']) elements['btn-remove-logo'].classList.remove('d-none');
 }
+
+function hideLogoPreview() {
+  if (elements['logo-preview-box']) elements['logo-preview-box'].innerHTML = `<span class="text-muted text-xs">No Logo</span>`;
+  if (elements['btn-remove-logo']) elements['btn-remove-logo'].classList.add('d-none');
+}
+
 
 function removeLogoAction() {
   state.logoDataUri = '';
@@ -2006,16 +2012,12 @@ function markInvoiceAsPaid(invoiceId) {
 function printInvoiceById(invoiceId) {
   const inv = state.invoices.find(i => i.id === invoiceId);
   if (!inv) return;
-  // Load into editor/preview silently then print
-  const prevEditId = state.editingInvoiceId;
+  // Load into editor/preview, wait for render to complete, then print
   loadInvoiceToEditor(invoiceId);
+  // Use longer timeout to ensure recalculateInvoice + DOM update is complete
   setTimeout(() => {
     window.print();
-    // Restore previous editing state after print dialog closes
-    if (prevEditId && prevEditId !== invoiceId) {
-      state.editingInvoiceId = prevEditId;
-    }
-  }, 400);
+  }, 800);
 }
 
 // Reprint a paid invoice — increments counter, renders watermark, prints
