@@ -1582,92 +1582,89 @@ function clearEditorForm() {
 
 // Load and populate fields when editing an invoice
 function loadInvoiceToEditor(invoiceId) {
-  const inv = state.invoices.find(invoice => invoice.id === invoiceId);
-  if (!inv) return;
-  
-  state.editingInvoiceId = inv.id;
-  
-  // Setup inputs
-  elements['inv-number'].value = inv.number || '';
-  elements['inv-date'].value = inv.date || '';
-  elements['inv-due-date'].value = inv.dueDate || '';
-  elements['inv-currency'].value = inv.currency || 'USD';
-  elements['inv-tax-type'].value = inv.taxType || 'GST';
-  
-  elements['seller-name'].value = inv.seller.name || '';
-  elements['seller-tax-id'].value = inv.seller.taxId || '';
-  elements['seller-phone'].value = inv.seller.phone || '';
-  elements['seller-email'].value = inv.seller.email || '';
-  elements['seller-address'].value = inv.seller.address || '';
-  
-  elements['buyer-name'].value = inv.buyer.name || '';
-  elements['buyer-tax-id'].value = inv.buyer.taxId || '';
-  elements['buyer-phone'].value = inv.buyer.phone || '';
-  elements['buyer-email'].value = inv.buyer.email || '';
-  elements['buyer-address'].value = inv.buyer.address || '';
-  
-  elements['inv-discount'].value = inv.discountInput || '0';
-  elements['inv-discount-type'].value = inv.discountType || 'percent';
-  elements['inv-paid-amount'].value = inv.paid || '0';
-  elements['inv-previous-due'].value = inv.previousDue || '0';
-  if (elements['seller-issued-by']) {
-    elements['seller-issued-by'].value = inv.seller.issuedBy || '';
-  }
-  elements['payment-upi-id'].value = inv.upi || '';
-  elements['payment-bank-details'].value = inv.bankDetails || '';
-  elements['inv-terms'].value = inv.terms || '';
+  try {
+    const inv = state.invoices.find(invoice => invoice.id === invoiceId);
+    if (!inv) { console.warn('loadInvoiceToEditor: invoice not found', invoiceId); return; }
 
-  // Style controls load
-  if (elements['opt-letterhead']) {
-    elements['opt-letterhead'].checked = inv.optLetterhead || false;
-  }
-  if (elements['opt-single-line-header']) {
-    elements['opt-single-line-header'].checked = inv.optSingleLineHeader || false;
-  }
-  if (elements['opt-company-name-fs']) {
-    elements['opt-company-name-fs'].value = inv.optCompanyNameFs || '24';
-    if (elements['val-company-name-fs']) {
-      elements['val-company-name-fs'].textContent = (inv.optCompanyNameFs || '24') + 'px';
+    const seller = inv.seller || {};
+    const buyer  = inv.buyer  || {};
+
+    state.editingInvoiceId = inv.id;
+
+    // Invoice meta
+    elements['inv-number'].value     = inv.number   || '';
+    elements['inv-date'].value       = inv.date      || '';
+    elements['inv-due-date'].value   = inv.dueDate   || '';
+    elements['inv-currency'].value   = inv.currency  || 'USD';
+    elements['inv-tax-type'].value   = inv.taxType   || 'GST';
+
+    // Seller
+    elements['seller-name'].value    = seller.name    || '';
+    elements['seller-tax-id'].value  = seller.taxId   || '';
+    elements['seller-phone'].value   = seller.phone   || '';
+    elements['seller-email'].value   = seller.email   || '';
+    elements['seller-address'].value = seller.address || '';
+    if (elements['seller-issued-by']) elements['seller-issued-by'].value = seller.issuedBy || '';
+
+    // Buyer
+    elements['buyer-name'].value    = buyer.name    || '';
+    elements['buyer-tax-id'].value  = buyer.taxId   || '';
+    elements['buyer-phone'].value   = buyer.phone   || '';
+    elements['buyer-email'].value   = buyer.email   || '';
+    elements['buyer-address'].value = buyer.address || '';
+
+    // Financials
+    elements['inv-discount'].value      = inv.discountInput || '0';
+    elements['inv-discount-type'].value = inv.discountType  || 'percent';
+    elements['inv-paid-amount'].value   = inv.paid          || '0';
+    elements['inv-previous-due'].value  = inv.previousDue   || '0';
+    elements['payment-upi-id'].value    = inv.upi           || '';
+    elements['payment-bank-details'].value = inv.bankDetails || '';
+    elements['inv-terms'].value         = inv.terms         || '';
+    // Style controls
+    if (elements['opt-letterhead'])       elements['opt-letterhead'].checked = inv.optLetterhead || false;
+    if (elements['opt-single-line-header']) elements['opt-single-line-header'].checked = inv.optSingleLineHeader || false;
+    if (elements['opt-company-name-fs']) {
+      elements['opt-company-name-fs'].value = inv.optCompanyNameFs || '24';
+      if (elements['val-company-name-fs']) elements['val-company-name-fs'].textContent = (inv.optCompanyNameFs || '24') + 'px';
     }
-  }
-  if (elements['opt-company-details-fs']) {
-    elements['opt-company-details-fs'].value = inv.optCompanyDetailsFs || '11';
-    if (elements['val-company-details-fs']) {
-      elements['val-company-details-fs'].textContent = (inv.optCompanyDetailsFs || '11') + 'px';
+    if (elements['opt-company-details-fs']) {
+      elements['opt-company-details-fs'].value = inv.optCompanyDetailsFs || '11';
+      if (elements['val-company-details-fs']) elements['val-company-details-fs'].textContent = (inv.optCompanyDetailsFs || '11') + 'px';
     }
-  }
-  if (elements['opt-company-name-color']) {
-    elements['opt-company-name-color'].value = inv.optCompanyNameColor || '#3b82f6';
-  }
+    if (elements['opt-company-name-color']) elements['opt-company-name-color'].value = inv.optCompanyNameColor || '#3b82f6';
 
-  // Logo
-  state.logoDataUri = inv.seller.logo || '';
-  if (state.logoDataUri) {
-    showLogoPreview(state.logoDataUri);
-  } else {
-    hideLogoPreview();
-  }
+    // Logo
+    state.logoDataUri = seller.logo || '';
+    if (state.logoDataUri) {
+      showLogoPreview(state.logoDataUri);
+    } else {
+      hideLogoPreview();
+    }
 
-  // Draw items
-  elements['editor-items-list'].innerHTML = '';
-  if (inv.items && inv.items.length > 0) {
-    inv.items.forEach(item => {
-      addItemRow(item);
-    });
-  } else {
-    addItemRow();
-  }
+    // Draw items
+    elements['editor-items-list'].innerHTML = '';
+    if (inv.items && inv.items.length > 0) {
+      inv.items.forEach(item => addItemRow(item));
+    } else {
+      addItemRow();
+    }
 
-  // Load signature pad
-  state.signatureImage = inv.signature || '';
-  if (state.signatureImage) {
-    loadSignatureToPad(state.signatureImage);
-  } else if (sigCanvas) {
-    sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
-  }
+    // Load signature pad
+    state.signatureImage = inv.signature || '';
+    if (state.signatureImage) {
+      loadSignatureToPad(state.signatureImage);
+    } else if (sigCanvas) {
+      sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height);
+    }
 
-  navigateToTab('editor');
-  recalculateInvoice();
+    navigateToTab('editor');
+    recalculateInvoice();
+
+  } catch (err) {
+    console.error('loadInvoiceToEditor failed:', err);
+    alert('Error loading invoice: ' + err.message);
+  }
 }
 
 // Render Dashboard (Metrics & Charts)
@@ -1904,8 +1901,10 @@ function renderInvoicesListTable() {
   const fC = (val) => `${symbol}${val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const filtered = state.invoices.filter(inv => {
-    const numMatch = inv.number.toLowerCase().includes(search);
-    const nameMatch = inv.buyer.name.toLowerCase().includes(search);
+    // Safe access — old invoices might have missing buyer object
+    const buyerName = (inv.buyer && inv.buyer.name) ? inv.buyer.name : '';
+    const numMatch = (inv.number || '').toLowerCase().includes(search);
+    const nameMatch = buyerName.toLowerCase().includes(search);
     const matchesSearch = numMatch || nameMatch;
     if (filter === 'paid') return matchesSearch && inv.balance <= 0;
     if (filter === 'pending') return matchesSearch && inv.balance > 0;
@@ -1921,56 +1920,27 @@ function renderInvoicesListTable() {
 
   tbody.innerHTML = filtered.map(inv => {
     const isPaid = inv.balance <= 0;
-    const badge = isPaid
-      ? `<span class="status-badge paid">Paid</span>`
-      : `<span class="status-badge pending">Pending</span>`;
-
-    // Reprint counter label
+    const buyerName = (inv.buyer && inv.buyer.name) ? inv.buyer.name : 'Unsaved';
+    const badge = isPaid ? `<span class="status-badge paid">Paid</span>` : `<span class="status-badge pending">Pending</span>`;
     const reprintCount = inv.reprintCount || 0;
-    const reprintLabel = reprintCount > 0
-      ? `<span class="reprint-badge">#${String(reprintCount).padStart(3,'0')}</span>`
-      : '';
+    const reprintLabel = reprintCount > 0 ? ` <span class="reprint-badge">#${String(reprintCount).padStart(3,'0')}</span>` : '';
 
-    // Action buttons
-    const markPaidBtn = !isPaid
-      ? `<button class="btn btn-success btn-sm btn-tbl-pay" data-id="${inv.id}">
-           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-           Mark Paid
-         </button>`
-      : '';
-
-    // Print button (always visible)
-    const printBtn = `<button class="btn btn-primary btn-sm btn-tbl-print" data-id="${inv.id}" title="Print / Save PDF">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-        Print
-      </button>`;
-
-    // Edit: only for unpaid invoices
-    const editBtn = !isPaid
+    const markPaidBtn = !isPaid ? `<button class="btn btn-success btn-sm btn-tbl-pay" data-id="${inv.id}">Mark Paid</button>` : '';
+    const printBtn    = `<button class="btn btn-primary btn-sm btn-tbl-print" data-id="${inv.id}">Print</button>`;
+    const editBtn     = !isPaid
       ? `<button class="btn btn-secondary btn-sm btn-tbl-edit" data-id="${inv.id}">Edit</button>`
-      : `<button class="btn btn-secondary btn-sm btn-tbl-reprint" data-id="${inv.id}" title="Reprint (count: ${reprintCount})">
-           <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.73"></path></svg>
-           Reprint ${reprintLabel}
-         </button>`;
-
-    const deleteBtn = `<button class="btn btn-danger btn-sm btn-tbl-del" data-id="${inv.id}">Delete</button>`;
+      : `<button class="btn btn-secondary btn-sm btn-tbl-reprint" data-id="${inv.id}">Reprint${reprintLabel}</button>`;
+    const deleteBtn   = `<button class="btn btn-danger btn-sm btn-tbl-del" data-id="${inv.id}">Delete</button>`;
 
     return `
       <tr class="${isPaid ? 'row-paid' : ''}">
         <td><strong>${inv.number}</strong></td>
         <td>${formatDate(inv.date)}</td>
-        <td>${inv.buyer.name || 'Unsaved'}</td>
+        <td>${buyerName}</td>
         <td>${fC(inv.total)}</td>
         <td><span class="${inv.balance > 0 ? 'text-warning' : 'text-success'}">${fC(inv.balance)}</span></td>
         <td>${badge}</td>
-        <td>
-          <div class="d-flex gap-2 flex-wrap">
-            ${markPaidBtn}
-            ${printBtn}
-            ${editBtn}
-            ${deleteBtn}
-          </div>
-        </td>
+        <td><div class="d-flex gap-2 flex-wrap">${markPaidBtn}${printBtn}${editBtn}${deleteBtn}</div></td>
       </tr>
     `;
   }).join('');
